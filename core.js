@@ -1,3 +1,4 @@
+import {subjects} from './content.js';
 export function parseNumbers(text) {
   const tokens = text.trim().split(/[;\s]+/).filter(Boolean);
   if (!tokens.length) throw new Error('Bitte mindestens einen Wert eingeben.');
@@ -34,10 +35,17 @@ const dateValid = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Da
 const string = (value,max) => typeof value==='string' && value.length<=max;
 export function validateBackup(input) {
   if (!input || typeof input!=='object' || input.version!==1 || !Array.isArray(input.tasks) || !Array.isArray(input.cards) || !Array.isArray(input.known) || !input.notes || typeof input.notes!=='object' || Array.isArray(input.notes)) throw new Error('Diese Datei ist kein gültiges Study-Hub-Backup.');
-  if (input.tasks.length>500 || input.cards.length>500 || input.known.length>1000 || Object.keys(input.notes).length>10) throw new Error('Das Backup ist zu groß.');
-  if (input.tasks.some(t=>!t || !string(t.id,100) || !string(t.title,200) || !t.title.trim() || !['BWL','Statistik','Mathematik','Technik','Allgemein'].includes(t.subject) || !(t.date===''||dateValid(t.date)) || typeof t.done!=='boolean')) throw new Error('Ungültige Aufgaben im Backup.');
-  if (input.cards.some(c=>!c || !string(c.id,100) || !['BWL','Statistik','Mathematik','Technik'].includes(c.subject) || !string(c.question,300) || !c.question.trim() || !string(c.answer,2000) || !c.answer.trim())) throw new Error('Ungültige Karteikarten im Backup.');
+  if (input.tasks.length>500 || input.cards.length>500 || input.known.length>1000 || Object.keys(input.notes).length>subjects.length) throw new Error('Das Backup ist zu groß.');
+  if (input.tasks.some(t=>!t || !string(t.id,100) || !string(t.title,200) || !t.title.trim() || ![...subjects,'Allgemein'].includes(t.subject) || !(t.date===''||dateValid(t.date)) || typeof t.done!=='boolean')) throw new Error('Ungültige Aufgaben im Backup.');
+  if (input.cards.some(c=>!c || !string(c.id,100) || !subjects.includes(c.subject) || !string(c.question,300) || !c.question.trim() || !string(c.answer,2000) || !c.answer.trim())) throw new Error('Ungültige Karteikarten im Backup.');
   if (new Set(input.tasks.map(t=>t.id)).size!==input.tasks.length || new Set(input.cards.map(c=>c.id)).size!==input.cards.length) throw new Error('Doppelte Kennungen im Backup.');
-  if (input.known.some(k=>!string(k,100)) || Object.entries(input.notes).some(([k,v])=>!['BWL','Statistik','Mathematik','Technik'].includes(k)||!string(v,20000))) throw new Error('Ungültiger Lernfortschritt oder Notizen.');
+  if (input.known.some(k=>!string(k,100)) || Object.entries(input.notes).some(([k,v])=>!subjects.includes(k)||!string(v,20000))) throw new Error('Ungültiger Lernfortschritt oder Notizen.');
   return {version:1,tasks:input.tasks.map(({id,title,subject,date,done})=>({id,title,subject,date,done})),cards:input.cards.map(({id,subject,question,answer})=>({id,subject,question,answer})),known:[...new Set(input.known)],notes:{...input.notes}};
+}
+
+export function validateCalendarUrl(value) {
+  if (typeof value!=='string' || value.length>4096) throw new Error('Ungültiger Kalenderlink.');
+  const url=new URL(value.trim());
+  if (url.protocol!=='https:' || url.hostname!=='rapla.dhbw.de' || url.pathname!=='/rapla/calendar' || url.username || url.password || url.port) throw new Error('Bitte einen HTTPS-Kalenderlink von rapla.dhbw.de verwenden.');
+  return url.href;
 }

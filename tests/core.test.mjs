@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {parseNumbers,statistics,business,validateBackup} from '../core.js';
+import {parseNumbers,statistics,business,validateBackup,validateCalendarUrl} from '../core.js';
 
 test('Dezimalzeichen, Leerzeichen und Zeilenumbrüche werden korrekt gelesen',()=>{
   assert.deepEqual(parseNumbers('1,5; -2.25\n3  +4'),[1.5,-2.25,3,4]);
@@ -31,4 +31,11 @@ test('Backups werden vollständig validiert und unbekannte Felder verworfen',()=
   assert.throws(()=>validateBackup({...backup,tasks:[{...backup.tasks[0],date:'2026-02-30'}]}));
   assert.throws(()=>validateBackup({...backup,tasks:[backup.tasks[0],backup.tasks[0]]}));
   assert.throws(()=>validateBackup({...backup,notes:{BWL:42}}));assert.throws(()=>validateBackup({version:2}));
+});
+
+test('Kalender akzeptiert nur den vorgesehenen HTTPS-Rapla-Dienst',()=>{
+ assert.equal(validateCalendarUrl('https://rapla.dhbw.de/rapla/calendar?key=example'), 'https://rapla.dhbw.de/rapla/calendar?key=example');
+ for(const url of ['javascript:alert(1)','http://rapla.dhbw.de/rapla/calendar','https://rapla.dhbw.de.evil.test/rapla/calendar','https://user:password@rapla.dhbw.de/rapla/calendar'])assert.throws(()=>validateCalendarUrl(url));
+ const backup={version:1,tasks:[{id:'m',title:'Lernen',subject:'Marketing',date:'',done:false}],cards:[],known:[],notes:{'Konstruktion & Werkstoffe':'Werkstoffe lernen'}};
+ assert.equal(validateBackup(backup).tasks[0].subject,'Marketing');
 });

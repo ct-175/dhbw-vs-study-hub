@@ -1,5 +1,5 @@
-import {parseNumbers,statistics,business,validateBackup} from './core.js';
-import {cards as seedCards,quiz as questions,links,subjects} from './content.js';
+import {parseNumbers,statistics,business,validateBackup,validateCalendarUrl} from './core.js';
+import {cards as seedCards,quiz as questions,links,subjects,courses} from './content.js';
 
 const $ = id => document.getElementById(id);
 const key = 'dhbw-vs-study-hub-v1';
@@ -28,18 +28,18 @@ function taskRow(task,compact=false) {
 }
 function renderDashboard() {
   const total=allCards().length,known=allCards().filter(c=>state.known.includes(c.id)).length;
-  $('metrics').replaceChildren(metric('LERNPLAN',state.tasks.filter(t=>!t.done).length,'offene Aufgaben'),metric('KARTEIKARTEN',`${known} / ${total}`,'als gekonnt markiert'),metric('LERNGEBIETE',subjects.length,'frei ergänzbar'));
+  $('metrics').replaceChildren(metric('LERNPLAN',state.tasks.filter(t=>!t.done).length,'offene Aufgaben'),metric('KARTEIKARTEN',`${known} / ${total}`,'als gekonnt markiert'),metric('FÄCHER IM SEMESTER',courses.length,'aus deinem Rapla-Plan'));
   const tasks=tasksSorted().filter(t=>!t.done).slice(0,3);
   $('upcoming').replaceChildren(...(tasks.length?tasks.map(t=>taskRow(t,true)):[node('p','Noch keine Aufgaben. Lege im Lernplan deinen nächsten Schritt an.','empty')]));
 }
 $('quicklinks').replaceChildren(...links.map(link=>{const a=node('a','','link-card');a.href=link.url;a.target='_blank';a.rel='noopener noreferrer';a.append(node('span',link.tag,'eyebrow'),node('h3',link.name+' ↗'),node('p',link.description));return a;}));
 $('today').textContent=new Date().toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'long'});
 function route() {
-  const knownViews=['dashboard','learn','stats','business','plan','settings'];
+  const knownViews=['dashboard','courses','calendar','learn','stats','business','plan','settings'];
   const requested=location.hash.slice(1),view=knownViews.includes(requested)?requested:'dashboard';
   for(const id of knownViews) $(id).hidden=id!==view;
   document.querySelectorAll('nav a').forEach(a=>a.hash==='#'+view?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
-  document.title=`${{dashboard:'Übersicht',learn:'Lernbereich',stats:'Statistik',business:'BWL-Rechner',plan:'Lernplan',settings:'Meine Daten'}[view]} · Study Hub`;
+  document.title=`${{dashboard:'Übersicht',courses:'Meine Fächer',calendar:'Stundenplan',learn:'Lernbereich',stats:'Statistik',business:'BWL-Rechner',plan:'Lernplan',settings:'Meine Daten'}[view]} · Study Hub`;
   if(view==='plan')renderTasks();
   if(view==='dashboard')renderDashboard();
 }
@@ -47,6 +47,27 @@ window.addEventListener('hashchange',()=>{route();$('main').focus({preventScroll
 try{document.body.classList.toggle('dark',localStorage.getItem(key+'-theme')==='dark');}catch{}
 function themeLabel(){$('theme').textContent=document.body.classList.contains('dark')?'Hell':'Dunkel';}
 $('theme').addEventListener('click',()=>{document.body.classList.toggle('dark');themeLabel();try{localStorage.setItem(key+'-theme',document.body.classList.contains('dark')?'dark':'light');}catch{}});themeLabel();
+
+for(const id of ['subject','task-subject']) {
+  $(id).replaceChildren(...[...subjects,...(id==='task-subject'?['Allgemein']:[])].map(subject=>{const option=node('option',subject);option.value=subject;return option;}));
+}
+$('course-list').replaceChildren(...courses.map(course=>{
+  const article=node('article','','panel course-card');article.append(node('span',course.area.toUpperCase(),'eyebrow'),node('h2',course.name),node('p',course.material,'fine'));
+  const button=node('button','Karten & Notizen öffnen','secondary');button.addEventListener('click',()=>{$('subject').value=course.subject;$('subject').dispatchEvent(new Event('change'));location.hash='learn';});article.append(button);return article;
+}));
+function showCalendarLink(value='') {
+  $('calendar-open').hidden=!value;$('calendar-remove').hidden=!value;
+  if(value)$('calendar-open').href=value;else $('calendar-open').removeAttribute('href');
+  $('calendar-status').textContent=value?'Link auf diesem Gerät gespeichert. Keine Synchronisierung mit anderen Geräten.':'Noch kein Link auf diesem Gerät hinterlegt.';
+  $('calendar-url').value='';
+}
+try {const value=localStorage.getItem(key+'-calendar');showCalendarLink(value?validateCalendarUrl(value):'');}catch{showCalendarLink();}
+$('calendar-form').addEventListener('submit',event=>{
+  event.preventDefault();$('calendar-error').textContent='';
+  try {const value=validateCalendarUrl($('calendar-url').value);localStorage.setItem(key+'-calendar',value);showCalendarLink(value);announce('Kalenderlink lokal gespeichert.');}
+  catch {$('calendar-error').textContent='Bitte einen gültigen HTTPS-Rapla-Link verwenden. Der Browser muss lokale Speicherung erlauben.';}
+});
+$('calendar-remove').addEventListener('click',()=>{try{localStorage.removeItem(key+'-calendar');showCalendarLink();announce('Kalenderlink entfernt.');}catch{announce('Der gespeicherte Link konnte nicht entfernt werden.');}});
 
 let cardIndex=0,revealed=false,quizIndex=0,quizScore=0,answered=false;
 const deck=()=>allCards().filter(c=>c.subject===$('subject').value);
@@ -115,7 +136,7 @@ $('task-filter').addEventListener('change',renderTasks);
 $('task-form').addEventListener('submit',event=>{event.preventDefault();const title=$('task-title').value.trim();if(!title){announce('Bitte einen Aufgabentitel eingeben.');return;}if(state.tasks.length>=500){announce('Maximal 500 Aufgaben sind möglich.');return;}const task={id:crypto.randomUUID(),title,subject:$('task-subject').value,date:$('task-date').value,done:false};try{validateBackup({...state,tasks:[...state.tasks,task]});}catch{announce('Bitte ein gültiges Datum eingeben.');return;}state.tasks.push(task);save();$('task-form').reset();renderTasks();});
 $('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=node('a');a.href=url;a.download=`study-hub-backup-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);announce('Backup heruntergeladen.');});
 $('import').addEventListener('change',async event=>{const file=event.target.files[0];if(!file)return;try{if(file.size>2000000)throw new Error('Die Datei darf höchstens 2 MB groß sein.');const imported=validateBackup(JSON.parse(await file.text()));if(!confirm('Vorhandene Aufgaben, Karten und Notizen durch dieses Backup ersetzen?'))return;state=imported;save();cardIndex=0;revealed=false;$('notes').value=state.notes[$('subject').value]||'';renderCard();renderTasks();announce('Backup importiert.');}catch(error){announce('Import fehlgeschlagen: '+error.message);}finally{event.target.value='';}});
-$('reset').addEventListener('click',()=>{if(!confirm('Alle gespeicherten Aufgaben, eigenen Karten, Notizen und Lernmarkierungen auf diesem Gerät löschen?'))return;state=blank();save();cardIndex=0;revealed=false;$('notes').value='';renderCard();renderTasks();announce('Gespeicherte Daten gelöscht.');});
+$('reset').addEventListener('click',()=>{if(!confirm('Alle gespeicherten Aufgaben, eigenen Karten, Notizen und Lernmarkierungen auf diesem Gerät löschen?'))return;state=blank();save();try{localStorage.removeItem(key+'-calendar');showCalendarLink();}catch{}cardIndex=0;revealed=false;$('notes').value='';renderCard();renderTasks();announce('Gespeicherte Daten gelöscht.');});
 $('notes').value=state.notes[$('subject').value]||'';renderDashboard();renderCard();renderQuiz();renderTasks();calculateStats();calculateBusiness();route();
 if(storageProblem)announce('Gespeicherte Daten konnten nicht geladen werden. Der Hub startet mit leeren persönlichen Daten.');
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>announce('Offline-Nutzung ist in diesem Browser derzeit nicht verfügbar.'));

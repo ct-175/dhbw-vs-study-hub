@@ -1,11 +1,11 @@
 # DHBW VS Study Hub
 
-Ein privates Studienprojekt für BWL Technical Management an der DHBW Villingen-Schwenningen. Version 0.1 ist eine statische Webapp ohne externe JavaScript-Abhängigkeiten. Keine offizielle DHBW-Anwendung.
+Ein privates Studienprojekt für BWL Technical Management an der DHBW Villingen-Schwenningen. Version 0.2 ist eine statische Webapp ohne externe JavaScript-Abhängigkeiten. Keine offizielle DHBW-Anwendung.
 
 ## Bereits nutzbar
 
 - Dashboard mit offiziellen Hochschul-Links und offenen Aufgaben
-- Karteikarten für BWL und Statistik, eigene Karten für vier Lerngebiete und lokale Lernmarkierungen
+- Karteikarten für BWL und Statistik, eigene Karten für alle Fächer und lokale Lernmarkierungen
 - Quiz mit Antworten und Erläuterungen
 - Notizen je Lerngebiet
 - Statistik: Mittelwert, Median, Modus, beide Varianzvarianten, Standardabweichung, Quartile, Häufigkeiten und Verteilungsdiagramm mit Rechenweg
@@ -43,7 +43,7 @@ Der Code ist für die Projektadresse `https://ct-175.github.io/dhbw-vs-study-hub
 3. Branch `main`, Ordner `/(root)` auswählen und speichern.
 4. Den Abschluss der Pages-Veröffentlichung abwarten.
 
-GitHub Free unterstützt Pages aus öffentlichen Repositories. Für dieses aktuell private Repository benötigt man einen passenden Tarif, etwa GitHub Pro. Die Sichtbarkeit wurde nicht geändert. Ein privates Repository macht eine gewöhnliche Pages-Seite nicht automatisch zu einer privaten Website. Keine vertraulichen Hochschul-Skripte in öffentlich ausgelieferten Dateien ablegen.
+GitHub Free unterstützt Pages aus öffentlichen Repositories. Private Repositories benötigen für Pages einen passenden Tarif, etwa GitHub Pro. Dieses Repository wurde inzwischen vom Eigentümer öffentlich geschaltet. Ein privates Repository macht eine gewöhnliche Pages-Seite nicht automatisch zu einer privaten Website. Keine vertraulichen Hochschul-Skripte in öffentlich ausgelieferten Dateien ablegen.
 
 Offizielle Anleitung: https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
 
@@ -79,3 +79,13 @@ Geprüft am 05.10.2026:
 ## Dateien
 
 `index.html`, `styles.css`, `app.js`: Oberfläche und lokale Interaktionen. `core.js`: Berechnung und Backup-Prüfung. `content.js`: erweiterbare Lerninhalte und Hochschul-Links. `sw.js`, `manifest.webmanifest`, `icon.svg`: Offline-/App-Grundlage. Bei Änderungen am Offline-Paket die Cache-Version in `sw.js` erhöhen.
+
+## Version 0.2
+
+Rot, Weiß und Dunkelgrau als DHBW-inspirierte Farbgestaltung, ohne offizielles Hochschullogo. Fächerübersicht für die neun regulären Lehrveranstaltungen aus dem bereitgestellten VS-WTM26-Kalender (1. Semester WiSe26/27). Die Liste ist eine Momentaufnahme, kein vollständiger Studienplan und keine automatisch synchronisierte Kalenderauswertung.
+
+Alle Fächer stehen für eigene Karten, Notizen und Aufgaben bereit. Nur BWL und Statistik enthalten bisher allgemeine Beispielkarten und Quizfragen. Die übrigen Skripte wurden noch nicht eingearbeitet. Das allgemeine Lerngebiet Technik bleibt für ältere Backups erhalten.
+
+Unter Stundenplan kann jede Person ihren Rapla-Kalenderlink lokal hinterlegen und den Originalkalender öffnen. Kein Kalenderzugriffsschlüssel wurde in das Repository übernommen. Der Link wird separat im Browser gespeichert, von Backups ausgeschlossen und durch das Löschen aller persönlichen Daten ebenfalls entfernt. Noch kein ICS-Import, keine automatisch im Hub angezeigten Vorlesungen.
+
+Das Repository ist inzwischen öffentlich; GitHub Pages wurde aktiviert. Die Sichtbarkeitseinstellung auf GitHub bleibt maßgeblich.

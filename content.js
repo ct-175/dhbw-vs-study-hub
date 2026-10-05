@@ -1,4 +1,16 @@
-export const subjects = ['BWL','Statistik','Mathematik','Technik'];
+export const courses = [
+  {subject:'BWL',name:'Einführung in die Betriebswirtschaftslehre',area:'Wirtschaft',material:'Grundlagen-Beispiele vorhanden'},
+  {subject:'VWL',name:'Einführung in die Volkswirtschaftslehre und Grundlagen der Mikroökonomik',area:'Wirtschaft',material:'Skript noch nicht eingearbeitet'},
+  {subject:'Statistik',name:'Statistik',area:'Methoden',material:'Grundlagen-Beispiele und Rechner vorhanden'},
+  {subject:'Mathematik',name:'Mathematik',area:'Methoden',material:'Skript noch nicht eingearbeitet'},
+  {subject:'Marketing',name:'Marketing',area:'Wirtschaft',material:'Skript noch nicht eingearbeitet'},
+  {subject:'Finanzbuchführung',name:'Finanzbuchführung',area:'Wirtschaft',material:'Skript noch nicht eingearbeitet'},
+  {subject:'Operationsmanagement',name:'International Operationsmanagement',area:'Management',material:'Skript noch nicht eingearbeitet'},
+  {subject:'Konstruktion & Werkstoffe',name:'Konstruktion & Werkstoffe',area:'Technik',material:'Skript noch nicht eingearbeitet'},
+  {subject:'Kinematik & Statik',name:'Kinematik, Statik',area:'Technik',material:'Skript noch nicht eingearbeitet'}
+];
+// Technik bleibt als allgemeines Lerngebiet für ältere Backups verfügbar.
+export const subjects = [...courses.map(course=>course.subject),'Technik'];
 export const cards = [
   {id:'bwl-1',subject:'BWL',question:'Was ist Umsatz?',answer:'Umsatz ist der Erlös aus verkauften Leistungen: Absatzmenge × Verkaufspreis. Er sagt allein noch nichts über den Gewinn aus.'},
   {id:'bwl-2',subject:'BWL',question:'Was ist Gewinn?',answer:'In unserem vereinfachten Rechenmodell: Umsatz − Gesamtkosten. In der Erfolgsrechnung werden Erträge und Aufwendungen gegenübergestellt.'},
