@@ -1,7 +1,8 @@
+import {scriptCards,scriptQuiz} from './study-material.js';
 export const courses = [
-  {subject:'BWL',name:'Einführung in die Betriebswirtschaftslehre',area:'Wirtschaft',material:'Grundlagen-Beispiele vorhanden'},
+  {subject:'BWL',name:'Einführung in die Betriebswirtschaftslehre',area:'Wirtschaft',material:'Skript-Lernkarten & Quiz vorhanden'},
   {subject:'VWL',name:'Einführung in die Volkswirtschaftslehre und Grundlagen der Mikroökonomik',area:'Wirtschaft',material:'Skript noch nicht eingearbeitet'},
-  {subject:'Statistik',name:'Statistik',area:'Methoden',material:'Grundlagen-Beispiele und Rechner vorhanden'},
+  {subject:'Statistik',name:'Statistik',area:'Methoden',material:'Skript-Lernkarten, Quiz & Rechner vorhanden'},
   {subject:'Mathematik',name:'Mathematik',area:'Methoden',material:'Skript noch nicht eingearbeitet'},
   {subject:'Marketing',name:'Marketing',area:'Wirtschaft',material:'Skript noch nicht eingearbeitet'},
   {subject:'Finanzbuchführung',name:'Finanzbuchführung',area:'Wirtschaft',material:'Skript noch nicht eingearbeitet'},
@@ -11,7 +12,7 @@ export const courses = [
 ];
 // Technik bleibt als allgemeines Lerngebiet für ältere Backups verfügbar.
 export const subjects = [...courses.map(course=>course.subject),'Technik'];
-export const cards = [
+const baseCards = [
   {id:'bwl-1',subject:'BWL',question:'Was ist Umsatz?',answer:'Umsatz ist der Erlös aus verkauften Leistungen: Absatzmenge × Verkaufspreis. Er sagt allein noch nichts über den Gewinn aus.'},
   {id:'bwl-2',subject:'BWL',question:'Was ist Gewinn?',answer:'In unserem vereinfachten Rechenmodell: Umsatz − Gesamtkosten. In der Erfolgsrechnung werden Erträge und Aufwendungen gegenübergestellt.'},
   {id:'bwl-3',subject:'BWL',question:'Was unterscheidet fixe und variable Kosten?',answer:'Fixe Kosten bleiben im betrachteten Beschäftigungsbereich unverändert. Variable Kosten ändern sich mit der produzierten oder verkauften Menge.'},
@@ -25,7 +26,7 @@ export const cards = [
   {id:'stat-5',subject:'Statistik',question:'Was misst die Standardabweichung?',answer:'Sie beschreibt die Streuung um den Mittelwert und ist die Quadratwurzel der Varianz. Sie hat dieselbe Einheit wie die ursprünglichen Werte.'},
   {id:'stat-6',subject:'Statistik',question:'Wann teilt die Varianzformel durch n − 1?',answer:'Bei der korrigierten Stichprobenvarianz als Schätzer der Populationsvarianz. Für die deskriptive Varianz der gesamten betrachteten Daten wird durch n geteilt.'}
 ];
-export const quiz = [
+const baseQuiz = [
   {subject:'BWL',question:'Du verkaufst 20 Stück zu je 15 €. Wie hoch ist der Umsatz?',options:['300 €','15 €','20 €','35 €'],correct:0,explanation:'Umsatz = 20 × 15 € = 300 €. Kosten werden erst bei der Gewinnberechnung berücksichtigt.'},
   {subject:'BWL',question:'Umsatz 800 €, Gesamtkosten 650 €: Wie hoch ist der Gewinn im vereinfachten Modell?',options:['1.450 €','150 €','650 €','800 €'],correct:1,explanation:'Gewinn = Umsatz − Gesamtkosten = 150 €.'},
   {subject:'BWL',question:'Preis 30 €, variable Stückkosten 18 €: Wie hoch ist der Stückdeckungsbeitrag?',options:['48 €','18 €','12 €','30 €'],correct:2,explanation:'30 € − 18 € = 12 € zur Deckung der Fixkosten und danach für den Gewinn.'},
@@ -43,3 +44,6 @@ export const links = [
   {name:'Software-Angebote',tag:'Werkzeuge',description:'Informationen zu MATLAB, Office, DATEV und weiteren Angeboten.',url:'https://www.dhbw-vs.de/studierende/serviceeinrichtungen/it-service-center/software.html'},
   {name:'Studienstart',tag:'Orientierung',description:'Offizielle Anlaufstellen zum Start an der DHBW VS.',url:'https://www.dhbw-vs.de/studierende/studienstart.html'}
 ];
+
+export const cards = [...baseCards.map(card=>({...card,topic:'Grundlagen-Beispiele'})),...scriptCards];
+export const quiz = [...baseQuiz.map(item=>({...item,topic:'Grundlagen-Beispiele'})),...scriptQuiz];

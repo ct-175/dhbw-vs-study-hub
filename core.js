@@ -11,12 +11,13 @@ export function parseNumbers(text) {
   });
 }
 
-export function statistics(values) {
+export function statistics(values,quantileMethod='linear') {
   if (!values.length || values.some(v => !Number.isFinite(v) || Math.abs(v) > 1e12)) throw new Error('Ungültige Daten.');
   const sorted = [...values].sort((a,b) => a-b);
   let mean = 0, m2 = 0;
   values.forEach((v,i) => { const delta = v - mean; mean += delta / (i+1); m2 += delta * (v-mean); });
-  const quantile = p => { const h = (sorted.length-1)*p, i = Math.floor(h); return sorted[i] + (sorted[Math.min(i+1, sorted.length-1)]-sorted[i])*(h-i); };
+  if (!['linear','course'].includes(quantileMethod)) throw new Error('Ungültige Quartilsregel.');
+  const quantile = p => { if(quantileMethod==='course'){ const position=sorted.length*p; if(Number.isInteger(position))return (sorted[Math.max(0,position-1)]+sorted[Math.min(sorted.length-1,position)])/2;return sorted[Math.ceil(position)-1]; } const h = (sorted.length-1)*p, i = Math.floor(h); return sorted[i] + (sorted[Math.min(i+1, sorted.length-1)]-sorted[i])*(h-i); };
   const counts = new Map();
   values.forEach(v => counts.set(v, (counts.get(v)||0)+1));
   const frequencies = [...counts].sort((a,b) => a[0]-b[0]);
@@ -37,10 +38,10 @@ export function validateBackup(input) {
   if (!input || typeof input!=='object' || input.version!==1 || !Array.isArray(input.tasks) || !Array.isArray(input.cards) || !Array.isArray(input.known) || !input.notes || typeof input.notes!=='object' || Array.isArray(input.notes)) throw new Error('Diese Datei ist kein gültiges Study-Hub-Backup.');
   if (input.tasks.length>500 || input.cards.length>500 || input.known.length>1000 || Object.keys(input.notes).length>subjects.length) throw new Error('Das Backup ist zu groß.');
   if (input.tasks.some(t=>!t || !string(t.id,100) || !string(t.title,200) || !t.title.trim() || ![...subjects,'Allgemein'].includes(t.subject) || !(t.date===''||dateValid(t.date)) || typeof t.done!=='boolean')) throw new Error('Ungültige Aufgaben im Backup.');
-  if (input.cards.some(c=>!c || !string(c.id,100) || !subjects.includes(c.subject) || !string(c.question,300) || !c.question.trim() || !string(c.answer,2000) || !c.answer.trim())) throw new Error('Ungültige Karteikarten im Backup.');
+  if (input.cards.some(c=>!c || !string(c.id,100) || !subjects.includes(c.subject) || !string(c.question,300) || !c.question.trim() || !string(c.answer,2000) || !c.answer.trim() || (c.topic!==undefined && !string(c.topic,150)))) throw new Error('Ungültige Karteikarten im Backup.');
   if (new Set(input.tasks.map(t=>t.id)).size!==input.tasks.length || new Set(input.cards.map(c=>c.id)).size!==input.cards.length) throw new Error('Doppelte Kennungen im Backup.');
   if (input.known.some(k=>!string(k,100)) || Object.entries(input.notes).some(([k,v])=>!subjects.includes(k)||!string(v,20000))) throw new Error('Ungültiger Lernfortschritt oder Notizen.');
-  return {version:1,tasks:input.tasks.map(({id,title,subject,date,done})=>({id,title,subject,date,done})),cards:input.cards.map(({id,subject,question,answer})=>({id,subject,question,answer})),known:[...new Set(input.known)],notes:{...input.notes}};
+  return {version:1,tasks:input.tasks.map(({id,title,subject,date,done})=>({id,title,subject,date,done})),cards:input.cards.map(({id,subject,question,answer,topic})=>({id,subject,question,answer,...(topic!==undefined?{topic}: {})})),known:[...new Set(input.known)],notes:{...input.notes}};
 }
 
 export function validateCalendarUrl(value) {

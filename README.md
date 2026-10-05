@@ -89,3 +89,13 @@ Alle Fächer stehen für eigene Karten, Notizen und Aufgaben bereit. Nur BWL und
 Unter Stundenplan kann jede Person ihren Rapla-Kalenderlink lokal hinterlegen und den Originalkalender öffnen. Kein Kalenderzugriffsschlüssel wurde in das Repository übernommen. Der Link wird separat im Browser gespeichert, von Backups ausgeschlossen und durch das Löschen aller persönlichen Daten ebenfalls entfernt. Noch kein ICS-Import, keine automatisch im Hub angezeigten Vorlesungen.
 
 Das Repository ist inzwischen öffentlich; GitHub Pages wurde aktiviert. Die Sichtbarkeitseinstellung auf GitHub bleibt maßgeblich.
+
+## Version 0.3: Skriptbezogene Lerninhalte
+
+86 neue, eigenständig formulierte Lernkarten und 40 neue Quizfragen zu BWL und Statistik. Die allgemeinen Beispielkarten bleiben erhalten. Themenfilter ermöglichen gezielte Wiederholung. Seitenverweise beziehen sich auf physische PDF-Seiten inklusive Titelseite, nicht auf aufgedruckte Foliennummern.
+
+Es werden keine PDFs, Folienbilder oder Originalaufgaben veröffentlicht. Die Inhalte behandeln fachliche Begriffe und Methoden in eigener Formulierung; neue Zahlenbeispiele wurden eigens erstellt. Die Fragen sind ein erster Lernbestand, kein Anspruch auf vollständige Abdeckung oder eine Prognose der Klausur.
+
+Quellen: Statistik-Skript, Wintersemester 2026/27 (295 PDF-Seiten), und Grundlagen der Betriebswirtschaftslehre TM26, Stand 05.10.2026 (413 PDF-Seiten), vom Eigentümer bereitgestellt. Die übrigen Fächer haben noch keine eingearbeiteten Skripte.
+
+Der Statistikrechner verwendet jetzt standardmäßig die Kurs-Quartilsregel von PDF-Seite 97: i = n × q, ganzzahlige Positionen mitteln, sonst aufrunden. Lineare Interpolation bleibt als Auswahl verfügbar. Die korrigierte Stichprobenvarianz ist die UI-Voreinstellung. Die Rechenfunktion hat weiterhin lineare Quartile als Standard für abwärtskompatible Aufrufe; die Oberfläche übergibt ihre Auswahl ausdrücklich.

@@ -39,3 +39,22 @@ test('Kalender akzeptiert nur den vorgesehenen HTTPS-Rapla-Dienst',()=>{
  const backup={version:1,tasks:[{id:'m',title:'Lernen',subject:'Marketing',date:'',done:false}],cards:[],known:[],notes:{'Konstruktion & Werkstoffe':'Werkstoffe lernen'}};
  assert.equal(validateBackup(backup).tasks[0].subject,'Marketing');
 });
+
+test('Kursquartile berücksichtigen ganzzahlige und aufzurundende Positionen',()=>{
+ const course=statistics([2,4,7,13],'course');assert.equal(course.q1,3);assert.equal(course.q3,10);
+ assert.equal(statistics([2,4,7,13],'linear').q1,3.5);
+ assert.equal(statistics([1,3,8],'course').q1,1);assert.equal(statistics([7],'course').q3,7);
+ assert.equal(statistics([2,4,4,4,5,5,7,9],'course').q3,6);
+});
+
+test('Skriptmaterial besitzt eindeutige Kennungen, gültige Seiten und eindeutige Antwortoptionen',async()=>{
+ const {scriptCards,scriptQuiz}=await import('../study-material.js');
+ assert.equal(scriptCards.length,86);assert.equal(scriptQuiz.length,40);
+ assert.equal(new Set(scriptCards.map(c=>c.id)).size,scriptCards.length);
+ for(const item of [...scriptCards,...scriptQuiz]){
+  assert.ok(item.page>=1&&item.page<=(item.subject==='BWL'?413:295));assert.ok(item.topic&&item.question);
+  if(item.options){assert.equal(item.options.length,4);assert.equal(new Set(item.options).size,4);assert.ok(item.correct>=0&&item.correct<4);assert.ok(item.explanation);}
+ }
+ const backup={version:1,tasks:[],cards:[{id:'own',subject:'Statistik',topic:'Lagemaße',question:'Frage',answer:'Antwort'}],known:[],notes:{}};
+ assert.equal(validateBackup(backup).cards[0].topic,'Lagemaße');assert.throws(()=>validateBackup({...backup,cards:[{...backup.cards[0],topic:42}]}));
+});

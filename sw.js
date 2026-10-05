@@ -1,5 +1,5 @@
-const CACHE = 'dhbw-vs-study-hub-v0.2.0';
-const FILES = ['./','./index.html','./styles.css','./app.js','./core.js','./content.js','./icon.svg','./manifest.webmanifest'];
+const CACHE = 'dhbw-vs-study-hub-v0.3.0';
+const FILES = ['./','./index.html','./styles.css','./app.js','./core.js','./content.js','./study-material.js','./icon.svg','./manifest.webmanifest'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES))));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('dhbw-vs-study-hub-') && key!==CACHE).map(key=>caches.delete(key))))));
 self.addEventListener('fetch',event=>{
